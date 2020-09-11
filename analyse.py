@@ -55,8 +55,8 @@ list_valeur=[]
 for i in range(len(riviere[0][0][13])):
     date=datetime.date(year=riviere[0][0][13][i][0],month=riviere[0][0][14][i][0],day=riviere[0][0][15][i][0])
     value=riviere[0][0][16][i][0]
-
-
+#
+#
     if value == -999:
         dict.update({f'{date}': np.nan})
         list_date.append(date)
@@ -79,37 +79,73 @@ for i in range(len(list_date)-1):
     else:
         list_valeur_anne.append(list_valeur[i])
 
+list_valeur_classe=list_valeur_gen
 
-#  194 on tombe en 1911
 none=[np.nan]*(366-194)
 list_valeur_gen[0]=none+list_valeur_gen[0]
 for j in range(len(list_valeur_gen)):
     if len(list_valeur_gen[j])== 365:
         list_valeur_gen[j]=list_valeur_gen[j]+[np.nan]
-    print(len(list_valeur_gen[j]))
-mean=np.nanmean(np.array(list_valeur_gen),axis=0)
+# mean=np.nanmean(np.array(list_valeur_gen),axis=0)
+#
+#
+# fig = plt.figure(figsize=(10,10))
+# ax = fig.add_subplot(1, 1, 1, )
+#
+# for i in range(len(list_valeur_gen)):
+#     x = np.linspace(1, len(list_valeur_gen[i]), len(list_valeur_gen[i]))
+#     plt.plot(x, list_valeur_gen[i], alpha=0.7, color='grey', linewidth=0.5)
+#     xmean = np.linspace(1, len(mean), len(mean))
+#     plt.plot(xmean, mean, alpha=1, color='k', linewidth=0.5)
+#
+# plt.title('\n\nHydrogrammes\n\n',fontsize=20)
+#
+# text2 = AnchoredText(f' Prince Albert station (4213440), North Saskatchewan river CA , 131000.0 km$^2$ \n $\quad$ $\qquad$ $\qquad$ $\qquad$  $\qquad$ $\qquad$ Latitude {lat:.2f} longitude {long:.2f}',loc='lower center',bbox_to_anchor=(0.5, 1.),bbox_transform=ax.transAxes, prop={'size': 10,'fontweight':"bold"},frameon=False)
+#
+# ax.set_xlabel('Jour',fontsize=12)
+# ax.set_ylabel('Débit (m$^3$/s)',fontsize=12)
+# ax.set_xlim(0,366)
+# ax.set_ylim(0,6000)
+#
+# ax.add_artist(text2)
+#
+# plt.savefig('hydrogramme.png',)
 
+"_____min,max,mean_____"
 
-fig = plt.figure(figsize=(10,10))
-ax = fig.add_subplot(1, 1, 1, )
-
+"print min max mean pour chaque year qui contient pas de nan"
+anne=np.linspace(1910,2016,len(list_valeur_gen)+1)
+# print(list_valeur_classe)
+anne_mean=[]
+list_min=[]
+list_max=[]
+list_mean=[]
 for i in range(len(list_valeur_gen)):
-    x = np.linspace(1, len(list_valeur_gen[i]), len(list_valeur_gen[i]))
-    plt.plot(x, list_valeur_gen[i], alpha=0.7, color='grey', linewidth=0.5)
-    xmean = np.linspace(1, len(mean), len(mean))
-    plt.plot(xmean, mean, alpha=1, color='k', linewidth=0.5)
-
-plt.title('\n\nHydrogrammes\n\n',fontsize=20)
-
-text2 = AnchoredText(f' Prince Albert station (4213440), North Saskatchewan river CA , 131000.0 km$^2$ \n $\quad$ $\qquad$ $\qquad$ $\qquad$  $\qquad$ $\qquad$ Latitude {lat:.2f} longitude {long:.2f}',loc='lower center',bbox_to_anchor=(0.5, 1.),bbox_transform=ax.transAxes, prop={'size': 10,'fontweight':"bold"},frameon=False)
-
-ax.set_xlabel('Jour',fontsize=12)
-ax.set_ylabel('Débit (m$^3$/s)',fontsize=12)
-ax.set_xlim(0,366)
-ax.set_ylim(0,6000)
-
-ax.add_artist(text2)
-
-plt.savefig('hydrogramme.png',)
+    if np.isnan(list_valeur_classe[i]).any()==True:
+        pass
+    else:
+        min = np.nanmin(list_valeur_gen[i])
+        max = np.nanmax(list_valeur_gen[i])
+        mean = np.nanmean(list_valeur_gen[i])
+        print(f'pour {anne[i]:.0f}, min:{min}, max:{max}, moyenne:{mean}')
+        anne_mean.append(anne[i])
+        list_max.append(max)
+        list_min.append(min)
+        list_mean.append(mean)
+"___graph indicateur hydrologique___"
 
 
+fig,ax=plt.subplots(nrows=3, ncols=1,constrained_layout=True,figsize=[20,10])
+
+ax[0].scatter(anne_mean,list_mean,marker='o',color='grey')
+ax[0].set_ylabel('Moyenne (m$^3$/s)')
+ax[1].scatter(anne_mean,list_min,marker='o',color='grey')
+ax[1].set_ylabel('Maximun (m$^3$/s)')
+ax[2].scatter(anne_mean,list_max,marker='o',color='grey')
+ax[2].set_ylabel('Minimun (m$^3$/s)')
+anne=np.arange(1910,2016,10)
+for i, a in enumerate(ax):
+    a.set_xticks(anne)
+    a.spines["top"].set_visible(False)
+    a.spines["right"].set_visible(False)
+plt.savefig('indicateur.png',)
