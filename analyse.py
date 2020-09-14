@@ -83,33 +83,36 @@ list_valeur_classe=list_valeur_gen
 
 none=[np.nan]*(366-194)
 list_valeur_gen[0]=none+list_valeur_gen[0]
+
 for j in range(len(list_valeur_gen)):
-    if len(list_valeur_gen[j])== 365:
-        list_valeur_gen[j]=list_valeur_gen[j]+[np.nan]
-# mean=np.nanmean(np.array(list_valeur_gen),axis=0)
-#
-#
-# fig = plt.figure(figsize=(10,10))
-# ax = fig.add_subplot(1, 1, 1, )
-#
-# for i in range(len(list_valeur_gen)):
-#     x = np.linspace(1, len(list_valeur_gen[i]), len(list_valeur_gen[i]))
-#     plt.plot(x, list_valeur_gen[i], alpha=0.7, color='grey', linewidth=0.5)
-#     xmean = np.linspace(1, len(mean), len(mean))
-#     plt.plot(xmean, mean, alpha=1, color='k', linewidth=0.5)
-#
-# plt.title('\n\nHydrogrammes\n\n',fontsize=20)
-#
-# text2 = AnchoredText(f' Prince Albert station (4213440), North Saskatchewan river CA , 131000.0 km$^2$ \n $\quad$ $\qquad$ $\qquad$ $\qquad$  $\qquad$ $\qquad$ Latitude {lat:.2f} longitude {long:.2f}',loc='lower center',bbox_to_anchor=(0.5, 1.),bbox_transform=ax.transAxes, prop={'size': 10,'fontweight':"bold"},frameon=False)
-#
-# ax.set_xlabel('Jour',fontsize=12)
-# ax.set_ylabel('Débit (m$^3$/s)',fontsize=12)
-# ax.set_xlim(0,366)
+    if len(list_valeur_gen[j])== 366:
+        list_valeur_gen[j]=list_valeur_gen[j][:61]+list_valeur_gen[j][62:]
+
+
+mean=np.nanmean(np.array(list_valeur_gen),axis=0)
+
+
+fig = plt.figure(figsize=(10,10))
+ax = fig.add_subplot(1, 1, 1, )
+
+for i in range(len(list_valeur_gen)):
+    x = np.linspace(1, len(list_valeur_gen[i]), len(list_valeur_gen[i]))
+    plt.plot(x, np.array(list_valeur_gen[i])/np.mean(mean), alpha=0.7, color='grey', linewidth=0.5)
+    xmean = np.linspace(1, len(mean), len(mean))
+    plt.plot(xmean, mean/np.mean(mean), alpha=1, color='k', linewidth=0.5)
+
+plt.title('\n\nHydrogrammes\n\n',fontsize=20)
+
+text2 = AnchoredText(f' Prince Albert station (4213440), North Saskatchewan river CA , 131000.0 km$^2$ \n $\quad$ $\qquad$ $\qquad$ $\qquad$  $\qquad$ $\qquad$ Latitude {lat:.2f} longitude {long:.2f}',loc='lower center',bbox_to_anchor=(0.5, 1.),bbox_transform=ax.transAxes, prop={'size': 10,'fontweight':"bold"},frameon=False)
+
+ax.set_xlabel('Jour',fontsize=12)
+ax.set_ylabel('Débit (m$^3$/s)',fontsize=12)
+# ax.set_xlim(0,365)
 # ax.set_ylim(0,6000)
-#
-# ax.add_artist(text2)
-#
-# plt.savefig('hydrogramme.png',)
+
+ax.add_artist(text2)
+
+plt.savefig('hydrogramme.png',)
 
 "_____min,max,mean_____"
 
@@ -138,14 +141,19 @@ for i in range(len(list_valeur_gen)):
 fig,ax=plt.subplots(nrows=3, ncols=1,constrained_layout=True,figsize=[20,10])
 
 ax[0].scatter(anne_mean,list_mean,marker='o',color='grey')
-ax[0].set_ylabel('Moyenne (m$^3$/s)')
+ax[0].set_ylabel('Moyenne (m$^3$/s)',fontsize=12)
+ax[0].set_title('Identification de 3 indicateurs hydrologiques\n\n',fontsize=20)
 ax[1].scatter(anne_mean,list_min,marker='o',color='grey')
-ax[1].set_ylabel('Maximun (m$^3$/s)')
+ax[2].set_ylabel('Maximun (m$^3$/s)',fontsize=12)
 ax[2].scatter(anne_mean,list_max,marker='o',color='grey')
-ax[2].set_ylabel('Minimun (m$^3$/s)')
+ax[1].set_ylabel('Minimun (m$^3$/s)',fontsize=12)
 anne=np.arange(1910,2016,10)
 for i, a in enumerate(ax):
     a.set_xticks(anne)
     a.spines["top"].set_visible(False)
     a.spines["right"].set_visible(False)
+
+text2 = AnchoredText(f' Prince Albert station (4213440), North Saskatchewan river CA , 131000.0 km$^2$ \n $\quad$ $\qquad$ $\qquad$ $\qquad$  $\qquad$ $\qquad$ Latitude {lat:.2f} longitude {long:.2f}',loc='lower center',bbox_to_anchor=(0.5, 1.),bbox_transform=ax[0].transAxes, prop={'size': 10,'fontweight':"bold"},frameon=False)
+#
+ax[0].add_artist(text2)
 plt.savefig('indicateur.png',)
